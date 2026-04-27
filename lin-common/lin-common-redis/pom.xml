@@ -9,9 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>lin-common-ratelimiter</artifactId>
-
-    <description>lin-common-ratelimiter 限流功能</description>
+    <artifactId>lin-common-redis</artifactId>
 
     <dependencies>
         <dependency>
@@ -19,13 +17,13 @@
             <artifactId>lin-common-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lin</groupId>
-            <artifactId>lin-common-redis</artifactId>
-            <optional>true</optional>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.40.0</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(mvn install *)",
+      "Bash(java -version)",
+      "Bash(mvn -version)",
+      "Read(//d/javaApps/jdks/**)",
+      "Read(//d/javaApps/**)",
+      "Read(//d/Program Files/**)",
+      "Bash(where java *)",
+      "Bash(export JAVA_HOME=\"D:/javaApps/jdks/jdk21\")",
+      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
+      "Bash(mvn dependency:tree -pl lin-common/lin-common-redis)",
+      "Bash(jar tf *)",
+      "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.ClusterServersConfig)",
+      "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.BaseMasterSlaveServersConfig)",
+      "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.BaseConfig)",
+      "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.SingleServerConfig)",
+      "Bash(mvn test *)",
+      "Bash(mvn dependency:tree -pl lin-main)"
+    ]
+  }
+}

@@ -3,17 +3,14 @@ package com.lin.ratelimiter.aspect;
 import com.lin.core.exception.BusinessException;
 import com.lin.ratelimiter.annotation.RateLimiter;
 import com.lin.ratelimiter.enums.LimitType;
+import com.lin.redis.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.redisson.api.RRateLimiter;
-import org.redisson.api.RateIntervalUnit;
 import org.redisson.api.RateType;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -44,9 +41,6 @@ public class RateLimiterAspect implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private RedissonClient redissonClient;
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -61,7 +55,7 @@ public class RateLimiterAspect implements ApplicationContextAware {
             String combineKey = getCombineKey(rateLimiter, point);
             RateType rateType = rateLimiter.limitType() == LimitType.CLUSTER
                 ? RateType.PER_CLIENT : RateType.OVERALL;
-            long number = rateLimiter(combineKey, rateType, count, time, timeout);
+            long number = RedisUtils.rateLimiter(combineKey, rateType, count, time, timeout);
             if (number == -1) {
                 throw new BusinessException(rateLimiter.message());
             }
@@ -73,18 +67,6 @@ public class RateLimiterAspect implements ApplicationContextAware {
                 throw new RuntimeException("服务器限流异常，请稍候再试", e);
             }
         }
-    }
-
-    private long rateLimiter(String key, RateType rateType, int count, int time, int timeout) {
-        RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
-        boolean setRate = rateLimiter.trySetRate(rateType, count, time, RateIntervalUnit.SECONDS);
-        if (setRate) {
-            rateLimiter.expireAsync(java.time.Duration.ofSeconds(timeout));
-        }
-        if (!rateLimiter.tryAcquire()) {
-            return -1;
-        }
-        return rateLimiter.availablePermits();
     }
 
     private String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
@@ -118,7 +100,7 @@ public class RateLimiterAspect implements ApplicationContextAware {
         if (rateLimiter.limitType() == LimitType.IP) {
             sb.append(getClientIP(request)).append(":");
         } else if (rateLimiter.limitType() == LimitType.CLUSTER) {
-            sb.append(redissonClient.getId()).append(":");
+            sb.append(RedisUtils.getClientId()).append(":");
         }
         return sb.append(key).toString();
     }

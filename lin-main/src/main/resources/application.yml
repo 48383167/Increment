@@ -1,6 +1,61 @@
+# ==================== 服务配置 ====================
 server:
   port: 8080
 
+# ==================== Spring Boot 配置 ====================
 spring:
   application:
     name: lin-main
+  data:
+    redis:
+      # ── 连接基础配置 ──
+      host: localhost           # Redis 服务器地址
+      port: 6379                # Redis 端口
+      password: 123456          # Redis 密码（无密码留空）
+      database: 0               # 使用的数据库编号（0-15）
+      timeout: 10s              # 连接超时时间
+
+# ==================== Redisson 扩展配置 ====================
+# Redisson 是 Redis 的高性能 Java 客户端，在 spring.data.redis 配置之外
+# 提供了更多企业级特性：分布式锁、限流器、连接池管理等。
+redisson:
+  # ── 全局 Key 前缀 ──
+  # 所有写入 Redis 的 key 都会自动加上此前缀，例如 key-prefix: lin 时，
+  # myKey 实际存储为 lin:myKey。多项目共用同一 Redis 实例时用于隔离。
+  key-prefix: lin
+
+  # ── 线程池 ──
+  # Redisson 内部工作线程数，处理命令发送、连接管理等。
+  # 默认 = CPU 核数 * 2，根据实际负载调整。
+  threads: 16
+  # Netty 事件循环线程数，负责网络 I/O。
+  # 默认 = CPU 核数 * 2。
+  netty-threads: 16
+
+  # ── 单节点连接池配置 ──
+  # 仅在单机 Redis 模式下生效，与 cluster-servers-config 二选一。
+  single-server-config:
+    # 客户端名称，用于在 Redis 的 CLIENT LIST 中标识连接来源
+    client-name: ${spring.application.name}
+    # 连接池最小空闲连接数，预热时预先建立，减少冷启动延迟
+    connection-minimum-idle-size: 8
+    # 连接池最大连接数，超过此数会阻塞等待（受 timeout 限制）
+    connection-pool-size: 32
+    # 空闲连接超时（毫秒），空闲超过此时间的连接会被释放
+    idle-connection-timeout: 10000
+    # 命令响应超时（毫秒），超过此时间未收到 Redis 响应则抛异常
+    timeout: 3000
+    # 订阅连接池大小，Pub/Sub 场景使用
+    subscription-connection-pool-size: 50
+
+  # ── 集群模式配置（二选一）──
+  # 当使用 Redis Cluster 时，注释掉 single-server-config，启用下方配置：
+  #cluster-servers-config:
+  #  client-name: ${spring.application.name}
+  #  master-connection-minimum-idle-size: 8
+  #  master-connection-pool-size: 32
+  #  slave-connection-minimum-idle-size: 8
+  #  slave-connection-pool-size: 32
+  #  idle-connection-timeout: 10000
+  #  timeout: 3000
+  #  subscription-connection-pool-size: 50

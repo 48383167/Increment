@@ -30,6 +30,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.lin</groupId>
+            <artifactId>lin-common-ratelimiter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lin</groupId>
+            <artifactId>lin-common-redis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Knife4j API 文档 (Spring Boot 3 用 jakarta 版本) -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>

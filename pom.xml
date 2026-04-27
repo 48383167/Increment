@@ -45,6 +45,11 @@
                 <artifactId>lin-common-ratelimiter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-common-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
