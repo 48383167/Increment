@@ -19,8 +19,6 @@
     <modules>
         <module>lin-main</module>
         <module>lin-common</module>
-        <module>lin-core</module>
-        <module>lin-jackson</module>
     </modules>
 
     <properties>

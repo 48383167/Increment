@@ -20,13 +20,13 @@
 
         <dependency>
             <groupId>com.lin</groupId>
-            <artifactId>lin-core</artifactId>
+            <artifactId>lin-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.lin</groupId>
-            <artifactId>lin-jackson</artifactId>
+            <artifactId>lin-common-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>
 
