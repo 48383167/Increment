@@ -2,6 +2,7 @@ package com.lin.ratelimiter.aspect;
 
 import com.lin.core.exception.BusinessException;
 import com.lin.ratelimiter.annotation.RateLimiter;
+import com.lin.ratelimiter.config.RateLimiterRedisKeys;
 import com.lin.ratelimiter.enums.LimitType;
 import com.lin.redis.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,6 @@ import java.lang.reflect.Method;
 @Slf4j
 @Aspect
 public class RateLimiterAspect implements ApplicationContextAware {
-
-    private static final String RATE_LIMIT_KEY = "rate_limit:";
 
     private final ExpressionParser parser = new SpelExpressionParser();
     private final ParserContext parserContext = new TemplateParserContext();
@@ -95,7 +94,7 @@ public class RateLimiterAspect implements ApplicationContextAware {
         HttpServletRequest request = ((ServletRequestAttributes)
             RequestContextHolder.getRequestAttributes()).getRequest();
 
-        StringBuilder sb = new StringBuilder(RATE_LIMIT_KEY);
+        StringBuilder sb = new StringBuilder(RateLimiterRedisKeys.KEY_PREFIX);
         sb.append(request.getRequestURI()).append(":");
         if (rateLimiter.limitType() == LimitType.IP) {
             sb.append(getClientIP(request)).append(":");
