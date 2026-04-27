@@ -1,0 +1,140 @@
+package com.lin.ratelimiter.aspect;
+
+import com.lin.core.exception.BusinessException;
+import com.lin.ratelimiter.annotation.RateLimiter;
+import com.lin.ratelimiter.enums.LimitType;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RRateLimiter;
+import org.redisson.api.RateIntervalUnit;
+import org.redisson.api.RateType;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.context.expression.MethodBasedEvaluationContext;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.common.TemplateParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.lang.reflect.Method;
+
+@Slf4j
+@Aspect
+public class RateLimiterAspect implements ApplicationContextAware {
+
+    private static final String RATE_LIMIT_KEY = "rate_limit:";
+
+    private final ExpressionParser parser = new SpelExpressionParser();
+    private final ParserContext parserContext = new TemplateParserContext();
+    private final ParameterNameDiscoverer pnd = new DefaultParameterNameDiscoverer();
+
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Before("@annotation(rateLimiter)")
+    public void doBefore(JoinPoint point, RateLimiter rateLimiter) {
+        int time = rateLimiter.time();
+        int count = rateLimiter.count();
+        int timeout = rateLimiter.timeout();
+        try {
+            String combineKey = getCombineKey(rateLimiter, point);
+            RateType rateType = rateLimiter.limitType() == LimitType.CLUSTER
+                ? RateType.PER_CLIENT : RateType.OVERALL;
+            long number = rateLimiter(combineKey, rateType, count, time, timeout);
+            if (number == -1) {
+                throw new BusinessException(rateLimiter.message());
+            }
+            log.info("限制令牌 => {}, 剩余令牌 => {}, 缓存key => '{}'", count, number, combineKey);
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                throw e;
+            } else {
+                throw new RuntimeException("服务器限流异常，请稍候再试", e);
+            }
+        }
+    }
+
+    private long rateLimiter(String key, RateType rateType, int count, int time, int timeout) {
+        RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
+        boolean setRate = rateLimiter.trySetRate(rateType, count, time, RateIntervalUnit.SECONDS);
+        if (setRate) {
+            rateLimiter.expireAsync(java.time.Duration.ofSeconds(timeout));
+        }
+        if (!rateLimiter.tryAcquire()) {
+            return -1;
+        }
+        return rateLimiter.availablePermits();
+    }
+
+    private String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
+        String key = rateLimiter.key();
+        if (key != null && !key.isEmpty() && key.contains("#")) {
+            MethodSignature signature = (MethodSignature) point.getSignature();
+            Method targetMethod = signature.getMethod();
+            Object[] args = point.getArgs();
+            MethodBasedEvaluationContext context =
+                new MethodBasedEvaluationContext(null, targetMethod, args, pnd);
+            context.setBeanResolver(new BeanFactoryResolver(applicationContext));
+            Expression expression;
+            if (key.startsWith(parserContext.getExpressionPrefix())
+                && key.endsWith(parserContext.getExpressionSuffix())) {
+                expression = parser.parseExpression(key, parserContext);
+            } else {
+                expression = parser.parseExpression(key);
+            }
+            try {
+                key = expression.getValue(context, String.class);
+            } catch (Exception e) {
+                log.warn("限流 SpEL 解析失败, key: {}, error: {}", key, e.getMessage());
+            }
+        }
+
+        HttpServletRequest request = ((ServletRequestAttributes)
+            RequestContextHolder.getRequestAttributes()).getRequest();
+
+        StringBuilder sb = new StringBuilder(RATE_LIMIT_KEY);
+        sb.append(request.getRequestURI()).append(":");
+        if (rateLimiter.limitType() == LimitType.IP) {
+            sb.append(getClientIP(request)).append(":");
+        } else if (rateLimiter.limitType() == LimitType.CLUSTER) {
+            sb.append(redissonClient.getId()).append(":");
+        }
+        return sb.append(key).toString();
+    }
+
+    private String getClientIP(HttpServletRequest request) {
+        String[] headers = {"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",
+            "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
+        for (String header : headers) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                if (ip.contains(",")) {
+                    ip = ip.split(",")[0].trim();
+                }
+                return ip;
+            }
+        }
+        return request.getRemoteAddr();
+    }
+}

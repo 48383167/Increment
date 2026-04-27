@@ -30,7 +30,21 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- 子模块统一版本管理，后续新增模块的依赖在此管理 -->
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-common-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-common-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-common-ratelimiter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
