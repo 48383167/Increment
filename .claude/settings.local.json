@@ -18,7 +18,9 @@
       "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.BaseConfig)",
       "Bash(javap -public -cp \"D:/Maven/apache-maven-3.9.9/MavenLocalRepository/org/redisson/redisson/3.40.0/redisson-3.40.0.jar\" org.redisson.config.SingleServerConfig)",
       "Bash(mvn test *)",
-      "Bash(mvn dependency:tree -pl lin-main)"
+      "Bash(mvn dependency:tree -pl lin-main)",
+      "Bash(mvn clean *)",
+      "Bash(JAVA_HOME=\"D:/javaApps/jdks/jdk21\" mvn clean package -DskipTests)"
     ]
   }
 }

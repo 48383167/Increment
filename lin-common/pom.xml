@@ -17,6 +17,7 @@
         <module>lin-common-jackson</module>
         <module>lin-common-ratelimiter</module>
         <module>lin-common-redis</module>
+        <module>lin-common-security</module>
     </modules>
 
 </project>

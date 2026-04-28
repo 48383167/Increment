@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/lin-common/lin-common-jackson/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-common/lin-common-ratelimiter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-common/lin-common-redis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lin-common/lin-common-security/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-core/src/main/java" charset="UTF-8" />

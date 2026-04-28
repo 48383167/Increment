@@ -1,3 +1,17 @@
+# ==================== 安全配置 ====================
+lin:
+  security:
+    enabled: true
+    token:
+      secret: lin-main-jwt-secret-key-2024  # 生产环境请使用足够长的随机字符串
+      expire-seconds: 7200                   # 令牌有效期 2 小时
+    # whitelist 用于非 Controller 资源（如静态页面），Controller 接口用 @Anonymous 注解控制
+    whitelist:
+      - /doc.html
+      - /v3/api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+
 # ==================== 服务配置 ====================
 server:
   port: 8080
