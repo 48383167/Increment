@@ -1,4 +1,4 @@
-package com.lin.model.vo;
+package com.lin.admin.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

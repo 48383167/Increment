@@ -1,4 +1,4 @@
-package com.lin.model.dto;
+package com.lin.admin.model.dto;
 
 import com.lin.jackson.validate.JsonPattern;
 import com.lin.jackson.validate.JsonType;

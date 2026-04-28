@@ -1,7 +1,7 @@
-package com.lin.controller;
+package com.lin.admin.controller;
 
+import com.lin.admin.model.dto.JacksonTestDTO;
 import com.lin.common.result.Result;
-import com.lin.model.dto.JacksonTestDTO;
 import com.lin.ratelimiter.annotation.RateLimiter;
 import com.lin.ratelimiter.enums.LimitType;
 import io.swagger.v3.oas.annotations.Operation;

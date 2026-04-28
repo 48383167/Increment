@@ -1,4 +1,4 @@
-package com.lin.model.dto;
+package com.lin.admin.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -17,4 +17,3 @@ public class TestRequestDTO {
     @NotNull(message = "年龄不能为空")
     private Integer age;
 }
-

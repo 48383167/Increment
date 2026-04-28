@@ -1,9 +1,9 @@
-package com.lin.controller;
+package com.lin.admin.controller;
 
+import com.lin.admin.model.vo.BigNumberTestVO;
+import com.lin.admin.model.vo.DateTestVO;
 import com.lin.common.result.Result;
 import com.lin.core.exception.BusinessException;
-import com.lin.model.vo.BigNumberTestVO;
-import com.lin.model.vo.DateTestVO;
 import com.lin.ratelimiter.annotation.RateLimiter;
 import com.lin.ratelimiter.enums.LimitType;
 import io.swagger.v3.oas.annotations.Operation;

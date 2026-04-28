@@ -1,4 +1,4 @@
-package com.lin.controller;
+package com.lin.admin.controller;
 
 import com.lin.common.result.Result;
 import com.lin.security.annotation.Anonymous;

@@ -19,6 +19,7 @@
     <modules>
         <module>lin-main</module>
         <module>lin-common</module>
+        <module>lin-modules</module>
     </modules>
 
     <properties>
@@ -53,6 +54,16 @@
             <dependency>
                 <groupId>com.lin</groupId>
                 <artifactId>lin-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-module-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
+                <artifactId>lin-module-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

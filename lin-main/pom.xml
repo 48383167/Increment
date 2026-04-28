@@ -18,30 +18,29 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- 业务模块 -->
         <dependency>
             <groupId>com.lin</groupId>
-            <artifactId>lin-common-core</artifactId>
+            <artifactId>lin-module-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lin</groupId>
+            <artifactId>lin-module-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <!-- 基础设施（全局生效，显式声明） -->
         <dependency>
             <groupId>com.lin</groupId>
             <artifactId>lin-common-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.lin</groupId>
-            <artifactId>lin-common-ratelimiter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.lin</groupId>
             <artifactId>lin-common-redis</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.lin</groupId>
             <artifactId>lin-common-security</artifactId>
@@ -53,11 +52,6 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>4.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>

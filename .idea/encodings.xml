@@ -11,6 +11,10 @@
     <file url="file://$PROJECT_DIR$/lin-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-jackson/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/lin-main/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lin-modules/lin-module-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lin-modules/lin-module-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lin-modules/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lin-modules/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

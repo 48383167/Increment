@@ -1,8 +1,8 @@
-package com.lin.controller;
+package com.lin.admin.controller;
 
+import com.lin.admin.model.dto.TestRequestDTO;
 import com.lin.common.result.Result;
 import com.lin.core.exception.BusinessException;
-import com.lin.model.dto.TestRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
