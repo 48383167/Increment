@@ -1,6 +1,8 @@
 package com.lin.admin.controller;
 
 import com.lin.common.result.Result;
+import com.lin.crypto.annotation.EncryptResponse;
+import com.lin.crypto.core.SessionKeyProvider;
 import com.lin.security.annotation.Anonymous;
 import com.lin.security.annotation.RequirePermission;
 import com.lin.security.context.LoginUser;
@@ -21,13 +23,15 @@ import java.util.UUID;
 public class AuthController {
 
     private final TokenProvider tokenProvider;
+    private final SessionKeyProvider sessionKeyProvider;
 
-    public AuthController(TokenProvider tokenProvider) {
+    public AuthController(TokenProvider tokenProvider, SessionKeyProvider sessionKeyProvider) {
         this.tokenProvider = tokenProvider;
+        this.sessionKeyProvider = sessionKeyProvider;
     }
 
     @Anonymous
-    @Operation(summary = "登录", description = "演示登录接口，返回 JWT 令牌")
+    @Operation(summary = "登录", description = "演示登录接口，返回 JWT 令牌和加密密钥")
     @PostMapping("/login")
     public Result<Map<String, String>> login(@RequestBody LoginRequest request) {
         LoginUser user = new LoginUser();
@@ -36,10 +40,12 @@ public class AuthController {
         user.setPermissions(Set.of("user:read", "user:write"));
 
         String token = tokenProvider.createToken(user);
-        return Result.success(Map.of("token", token));
+        String encryptKey = sessionKeyProvider.createSession(user.getUserId());
+        return Result.success(Map.of("token", token, "encryptKey", encryptKey));
     }
 
-    @Operation(summary = "获取当前用户信息", description = "需要有效的 JWT 令牌")
+    @EncryptResponse
+    @Operation(summary = "获取当前用户信息（响应加密）", description = "需要有效的 JWT 令牌，响应 data 经 AES-256-GCM 加密")
     @GetMapping("/info")
     public Result<LoginUser> info() {
         return Result.success(UserContext.get());

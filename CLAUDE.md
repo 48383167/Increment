@@ -23,20 +23,31 @@ Java 21, Spring Boot 3.4.5, Maven multi-module.
 
 ```
 Increment (root pom, version 1.0-SNAPSHOT)
-├── lin-main           → Spring Boot app, controllers, DTOs, config
-└── lin-common (pom)   → shared libraries
-    ├── lin-common-core        → Result<T>, ResultCode, BusinessException, GlobalExceptionHandler
-    ├── lin-common-jackson     → Jackson auto-config, BigNumberSerializer, CustomDateDeserializer, JsonUtils, @JsonPattern
-    └── lin-common-ratelimiter → @RateLimiter AOP with Redisson (IP/CLUSTER/DEFAULT modes, SpEL key support)
+├── lin-main           → Spring Boot app entry point, wires all modules together
+├── lin-common (pom)   → shared libraries (auto-config, no manual scanning needed)
+│   ├── lin-common-core        → Result<T>, ResultCode, BusinessException, GlobalExceptionHandler, RedisKeyPrefixProvider
+│   ├── lin-common-jackson     → Jackson auto-config, BigNumberSerializer, CustomDateDeserializer, JsonUtils, @JsonPattern
+│   ├── lin-common-ratelimiter → @RateLimiter AOP with Redisson (IP/CLUSTER/DEFAULT modes, SpEL key support)
+│   ├── lin-common-redis       → RedisUtils (static), RedisConfig (CompositeCodec + KeyPrefixHandler), RedisKeyConflictChecker
+│   ├── lin-common-security    → JWT auth: TokenAuthenticationFilter + SecurityInterceptor + @RequirePermission AOP
+│   └── lin-common-crypto      → @EncryptResponse + AES-256-GCM ResponseBodyAdvice, session key management
+└── lin-modules (pom)  → business modules
+    ├── lin-module-admin       → admin controllers (Auth, Order, Test), Manager/Service pattern
+    └── lin-module-api         → public API controllers
 ```
 
 ## Key Patterns
 
 - **Unified response**: All controllers return `Result<T>` with code + msg + data. Success → `ResultCode.SUCCESS` (200). Never throw strings.
 - **Business exceptions**: Throw `BusinessException(String msg)` or `BusinessException(ResultCode code)`. Caught by `GlobalExceptionHandler` → `Result.error(...)`.
-- **Auto-configuration**: Config classes use `@AutoConfiguration` (not `@Configuration`) so they're picked up automatically by any module that depends on them. No `@ComponentScan` or `spring.factories` needed.
+- **Auto-configuration**: Config classes use `@AutoConfiguration` (not `@Configuration`) so they're picked up automatically by any module that depends on them. No `@ComponentScan` or `spring.factories` needed. Enabled/disabled via `@ConditionalOnBean` or `@ConditionalOnProperty`.
 - **Jackson**: `BigNumberSerializer` converts Long/BigInteger/BigDecimal to strings when outside JS safe integer range (prevents frontend precision loss). `CustomDateDeserializer` auto-detects date formats via Hutool. All wired in `JacksonConfig`.
 - **Rate limiting**: Annotate any controller method with `@RateLimiter(time=60, count=10, limitType=LimitType.IP)`. Requires Redisson on classpath. AOP aspect auto-registers via `RateLimiterConfig` when `RedissonClient` bean exists.
+- **Security (JWT)**: Three-layer design. `TokenAuthenticationFilter` (OncePerRequestFilter) parses Bearer token → `UserContext` (ThreadLocal). `SecurityInterceptor` (HandlerInterceptor) decides: whitelist match, `@Anonymous` on class/method, or authenticated user → pass; otherwise 401. `@RequirePermission("user:write")` (AOP) checks `UserContext.getPermissions()`. Config via `lin.security.*` properties; defaults enabled with 7200s token expiry.
+- **Redis utilities**: `RedisUtils` is a static facade — injects `RedissonClient` via `RedisClientInitializer` on startup. Covers String/List/Set/Map/Atomic/RLimiter operations. Key encoding: `StringCodec` for keys, `TypedJsonJacksonCodec` for values (ISO-8601 LocalDateTime).
+- **Redis Key prefix management**: Each module defines a `PREFIX` constant and implements `RedisKeyPrefixProvider` (defined in core). `RedisKeyConflictChecker` scans all implementations at startup and logs errors if prefixes collide — prevents runtime key overwrites between modules.
+- **Manager pattern** (lin-module-admin): `OrderManager` orchestrates multiple `@Service` beans (UserService → InventoryService → OrderService → PaymentService). Manager handles sequencing and transaction boundaries; services are single-responsibility.
+- **Response encryption**: `@EncryptResponse` on Controller class/method → `EncryptResponseBodyAdvice` (ResponseBodyAdvice) encrypts `Result.data` using AES-256-GCM. Session key (base64) returned during login as `encryptKey` field. Response header `X-Encrypted: true` signals encryption. Frontend decrypts with Web Crypto API using the session key.
 
 ## Dependencies
 

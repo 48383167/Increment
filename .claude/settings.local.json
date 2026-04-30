@@ -21,7 +21,8 @@
       "Bash(mvn dependency:tree -pl lin-main)",
       "Bash(mvn clean *)",
       "Bash(JAVA_HOME=\"D:/javaApps/jdks/jdk21\" mvn clean package -DskipTests)",
-      "Bash(JAVA_HOME=\"D:/javaApps/jdks/jdk21\" mvn clean package -DskipTests -rf :lin-module-api)"
+      "Bash(JAVA_HOME=\"D:/javaApps/jdks/jdk21\" mvn clean package -DskipTests -rf :lin-module-api)",
+      "Bash(javac -version)"
     ]
   }
 }

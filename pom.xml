@@ -58,6 +58,11 @@
             </dependency>
             <dependency>
                 <groupId>com.lin</groupId>
+                <artifactId>lin-common-crypto</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lin</groupId>
                 <artifactId>lin-module-admin</artifactId>
                 <version>${project.version}</version>
             </dependency>

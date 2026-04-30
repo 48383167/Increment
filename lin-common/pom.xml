@@ -18,6 +18,7 @@
         <module>lin-common-ratelimiter</module>
         <module>lin-common-redis</module>
         <module>lin-common-security</module>
+        <module>lin-common-crypto</module>
     </modules>
 
 </project>

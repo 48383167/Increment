@@ -30,6 +30,10 @@
             <artifactId>lin-common-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.lin</groupId>
+            <artifactId>lin-common-crypto</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>4.5.0</version>
