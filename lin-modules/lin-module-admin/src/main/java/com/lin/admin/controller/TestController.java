@@ -3,6 +3,7 @@ package com.lin.admin.controller;
 import com.lin.admin.model.dto.TestRequestDTO;
 import com.lin.common.result.Result;
 import com.lin.core.exception.BusinessException;
+import com.lin.crypto.annotation.EncryptResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +33,7 @@ public class TestController {
         return Result.success();
     }
 
+    @EncryptResponse
     @Operation(summary = "测试参数校验", description = "验证 Validation 是否对非法参数拦截")
     @PostMapping("/validate")
     public Result<TestRequestDTO> validate(@Validated @RequestBody TestRequestDTO requestDTO) {

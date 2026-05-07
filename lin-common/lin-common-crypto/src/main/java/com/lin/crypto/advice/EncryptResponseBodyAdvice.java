@@ -8,15 +8,19 @@ import com.lin.crypto.core.SessionKeyProvider;
 import com.lin.crypto.core.UserIdProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.crypto.SecretKey;
 
 @Slf4j
+@ControllerAdvice
+@ConditionalOnProperty(prefix = "lin.crypto", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 

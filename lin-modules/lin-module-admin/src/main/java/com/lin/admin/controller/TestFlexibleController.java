@@ -2,6 +2,7 @@ package com.lin.admin.controller;
 
 import com.lin.admin.model.dto.JacksonTestDTO;
 import com.lin.common.result.Result;
+import com.lin.crypto.annotation.EncryptResponse;
 import com.lin.ratelimiter.annotation.RateLimiter;
 import com.lin.ratelimiter.enums.LimitType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,7 @@ public class TestFlexibleController {
     // ──────────────────── 参数校验 ────────────────────
 
     @Operation(summary = "参数校验", description = "测试 @NotNull / @NotBlank 等 Jakarta Validation 校验")
+    @EncryptResponse
     @PostMapping("/validate")
     public Result<JacksonTestDTO> validate(@Validated @RequestBody JacksonTestDTO dto) {
         return Result.success(dto);
